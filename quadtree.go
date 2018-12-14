@@ -73,6 +73,6 @@ func (q *Quadtree) IsLeaf() bool {
 }
 
 // NewQuadtree generates a new root node.
-func NewQuadtree(boundary BoundingBox) *Quadtree {
-	return &Quadtree{Boundary: boundary}
+func NewQuadtree(boundary BoundingBox) Quadtree {
+	return Quadtree{Boundary: boundary}
 }
