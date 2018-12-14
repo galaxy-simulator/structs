@@ -13,10 +13,10 @@ func (s Star2D) InsideOf(boundary BoundingBox) bool {
 
 	// Test if the star is inside or outside of the bounding box.
 	// Abort testing if one of the conditions is not met
-	if s.C.X < boundary.center.X+boundary.width/2 {
-		if s.C.X > boundary.center.X-boundary.width/2 {
-			if s.C.Y < boundary.center.Y+boundary.width/2 {
-				if s.C.Y > boundary.center.Y-boundary.width/2 {
+	if s.C.X < boundary.Center.X+boundary.Width/2 {
+		if s.C.X > boundary.Center.X-boundary.Width/2 {
+			if s.C.Y < boundary.Center.Y+boundary.Width/2 {
+				if s.C.Y > boundary.Center.Y-boundary.Width/2 {
 					return true
 				} else {
 					return false
@@ -36,23 +36,23 @@ func (s Star2D) InsideOf(boundary BoundingBox) bool {
 // is applied on is.
 // This methods presumes that the point is inside of the boundingBox
 func (s Star2D) Quadrant(starsQuadtree *Quadtree) string {
-	centerX := starsQuadtree.boundary.center.X
-	centerY := starsQuadtree.boundary.center.Y
+	centerX := starsQuadtree.Boundary.Center.X
+	centerY := starsQuadtree.Boundary.Center.Y
 
-	// test if the point is left the the center or not
+	// test if the point is left the the Center or not
 	if s.C.X < centerX {
 
-		// Test if the point is above or below of the center
+		// Test if the point is above or below of the Center
 		if s.C.Y > centerY {
 			return "northwest"
 		} else {
 			return "southwest"
 		}
 
-		// The point is right of the center
+		// The point is right of the Center
 	} else {
 
-		// Test if the point is above or below of the center
+		// Test if the point is above or below of the Center
 		if s.C.Y > centerY {
 			return "northeast"
 		} else {
