@@ -7,6 +7,10 @@ type Star2D struct {
 	M float64 // mass        of the star
 }
 
+func NewStar2D(c Vec2, v Vec2, m float64) Star2D {
+	return Star2D{C: c, V: v, M: m}
+}
+
 // InsideOf is a method that tests if the star it is applied on is in or outside of the given
 // BoundingBox. It returns true if the star is inside of the BoundingBox and false if it isn't.
 func (s Star2D) InsideOf(boundary BoundingBox) bool {

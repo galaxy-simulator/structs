@@ -9,8 +9,8 @@ type Vec2 struct {
 }
 
 // newVec2 returns a new Vec2 using the given coordinates
-func newVec2(x float64, y float64) *Vec2 {
-	return &Vec2{
+func NewVec2(x float64, y float64) Vec2 {
+	return Vec2{
 		X: x,
 		Y: y,
 	}

@@ -6,6 +6,6 @@ type BoundingBox struct {
 	Width  float64 // Width of the box
 }
 
-func NewBoundingBox(center Vec2, width float64) *BoundingBox {
-	return &BoundingBox{Center: center, Width: width}
+func NewBoundingBox(center Vec2, width float64) BoundingBox {
+	return BoundingBox{Center: center, Width: width}
 }
