@@ -86,10 +86,6 @@ func (q *Quadtree) IsLeaf() {
 
 // NewQuadtree generates a new root node.
 func NewQuadtree(boundary BoundingBox) *Quadtree {
-	//newquadtree := &Quadtree{
-	//	Boundary: boundary,
-	//}
-
 	newquadtree := &Quadtree{
 		Boundary: BoundingBox{
 			Center: Vec2{
@@ -98,142 +94,138 @@ func NewQuadtree(boundary BoundingBox) *Quadtree {
 			},
 			Width: boundary.Width,
 		},
-		CenterOfMass: Vec2{
-			X: 0,
-			Y: 0,
-		},
-		TotalMass: 0,
-		Depth:     0,
-		Star: Star2D{
-			C: Vec2{
-				X: 0,
-				Y: 0,
-			},
-			V: Vec2{
-				X: 0,
-				Y: 0,
-			},
-			M: 0,
-		},
-		Leaf:      false,
-		Quadrants: [4]*Quadtree{},
+		CenterOfMass: Vec2{},
+		TotalMass:    0,
+		Depth:        0,
+		Star:         Star2D{},
+		Leaf:         true,
+		Quadrants:    [4]*Quadtree{},
 	}
+	log.Printf("[+++] New Quadtree: %v", newquadtree)
 	return newquadtree
 }
 
 // Insert inserts the given point into the quadtree the method is called on
 func (q *Quadtree) Insert(point Star2D) {
-	log.Printf("[ ] Inserting point %v into the tree %v", point, q)
+	log.Printf("[   ] Inserting point %v into the tree %v", point, q)
+
+	// prints the stars in the leaves of the current node
+	log.Printf("[>>>] - Current Star [node]: %v", q.Star)
+	for i := 0; i < 4; i++ {
+		if q.Quadrants[i] != nil {
+			log.Printf("[>>>] - Current Star [%d]: %v", i, q.Quadrants[i].Star)
+		} else {
+			log.Printf("[>>>] - Current Star [%d]: ", i)
+		}
+	}
+
+	// create a shortcut for the various bounding box variables
 	bx := q.Boundary.Center.X
 	by := q.Boundary.Center.Y
 	bw := q.Boundary.Width
-	log.Printf("[~] \t Bounding Box X: %f", bx)
-	log.Printf("[~] \t Bounding Box Y: %f", by)
-	log.Printf("[~] \t Bounding Box Width: %f", bw)
+	log.Printf("[ ~ ] \t Bounding Box X: %f", bx)
+	log.Printf("[ ~ ] \t Bounding Box Y: %f", by)
+	log.Printf("[ ~ ] \t Bounding Box Width: %f", bw)
 
-	var empty bool = true // is the tree empty?
-	for _, element := range q.Quadrants {
+	// Insert thee given star into the galaxy
+	// Case 1: There is no star inside of the node
+	if q.Star == (Star2D{Vec2{}, Vec2{}, 0}) {
+		log.Printf("[ + ] There was no star inside of the node -> inserting directly")
+		q.Star = point
+		return
 
-		// if one element is not empty
-		if element != nil {
-			empty = false
-		}
-	}
+		// Case 2: There is all ready a star inside of the node
+	} else {
+		log.Printf("[ + ] There is allready a star inside of the node -> subdividing")
 
-	empty = true
-
-	if empty == true {
-		log.Println("[ ] Subdividing the current tree")
-		q.subdivide()
-		log.Println("[+] Done Subdividing!")
-
-		log.Printf("[~] \t point: %v\n", point)
-		log.Printf("[~] \t quadrant: %v\n", q.Quadrants[0])
-
+		// Test if the star is left or right of the center point
 		if point.C.X < bx && point.C.X > bx-bw {
-			// Left
-			log.Println("[~] \t\t The point is left of the y-axis!")
+			log.Println("[<  ] \t\t The point is left of the center point!")
+
+			// Test if the star is above or below the center point
 			if point.C.Y > by && point.C.Y < by+bw {
-				// Top Left
-				log.Println("[~] \t\t The point is above of the x-axis!")
-				log.Println("[ ] \t Inserting the point into the top left (NW) quadtree")
-				q.Quadrants[0].Star = point
-				log.Println("[+] \t DONE!")
+				log.Println("[ ^ ] \t\t The point is above of the center point!")
+
+				// Subdivide if...
+				// ... the quadrant does not contain a node yet or if there is all ready a node in the quadrant
+				// ... the quadrant is a leaf
+				if (q.Quadrants[0] == nil || q.Quadrants[0].Star != (Star2D{Vec2{}, Vec2{}, 0})) && q.Leaf == true {
+					q.subdivide()
+				} else {
+					q.Quadrants[0].Insert(point)
+				}
+
 			} else {
-				// Bottom Left
-				log.Println("[~] \t\t The point is below of the x-axis!")
-				log.Println("[ ] \t Inserting the point into the bottom left (SW) quadtree")
-				q.Quadrants[2].Star = point
-				log.Println("[+] \t DONE!")
+				log.Println("[ v ] \t\t The point is below of the center point!")
+				if (q.Quadrants[2] == nil || q.Quadrants[2].Star != (Star2D{Vec2{}, Vec2{}, 0})) && q.Leaf == true {
+					q.subdivide()
+				} else {
+					q.Quadrants[2].Insert(point)
+				}
 			}
+
 		} else {
-			// Right
-			log.Println("[~] \t\t The point is right of the y-axis!")
+			log.Println("[ > ] \t\t The point is right of the center point!")
+
+			// Test if the star is above or below the center point
 			if point.C.Y > by && point.C.Y < by+bw {
-				// Top Right
-				log.Println("[~] \t\t The point is above of the x-axis!")
-				log.Println("[ ] \t Inserting the point into the top right (NE) quadtree")
-				q.Quadrants[1].Star = point
-				log.Println("[+] \t DONE!")
+				log.Println("[ ^ ] \t\t The point is above of the center point!")
+				if (q.Quadrants[1] == nil || q.Quadrants[1].Star != (Star2D{Vec2{}, Vec2{}, 0})) && q.Leaf == true {
+					q.subdivide()
+				} else {
+					q.Quadrants[1].Insert(point)
+				}
 			} else {
-				// Bottom Right
-				log.Println("[~] \t\t The point is below of the x-axis!")
-				log.Println("[ ] \t Inserting the point into the bottom right (SE) quadtree")
-				q.Quadrants[3].Star = point
-				log.Println("[+] \t DONE!")
+				log.Println("[ v ] \t\t The point is below of the center point!")
+				if (q.Quadrants[3] == nil || q.Quadrants[3].Star != (Star2D{Vec2{}, Vec2{}, 0})) && q.Leaf == true {
+					q.subdivide()
+				} else {
+					q.Quadrants[3].Insert(point)
+				}
 			}
 		}
 	}
+
+	log.Printf("[>>>] Current Star [node]: %v", q.Star)
+	for i := 0; i < 4; i++ {
+		if q.Quadrants[i] != nil {
+			log.Printf("[>>>] Current Star [%d]: %v", i, q.Quadrants[i].Star)
+		} else {
+			log.Printf("[>>>] Current Star [%d]: ", i)
+		}
+	}
+
+	log.Printf("[   ] Tree after insertion: %v", q)
 }
 
 // subdivide subdivides the quadtree it is called on
 func (q *Quadtree) subdivide() {
-	log.Println("[ ] Getting the current boundary")
+	// Toggle the leaf state: the node is not a leaf anymore
+	q.Leaf = false
+
+	// Get the "old" bounding box values
 	oldCenterX := q.Boundary.Center.X
 	oldCenterY := q.Boundary.Center.Y
 	oldWidth := q.Boundary.Width
-	log.Printf("[~] \t oldCenterX: %f\n", oldCenterX)
-	log.Printf("[~] \t oldCenterY: %f\n", oldCenterY)
-	log.Printf("[~] \t oldWidth: %f\n", oldWidth)
-	log.Println("[+] Done getting the current boundary!")
 
-	log.Println("[ ] Defining the new centerpoints")
-	newCenterNW := Vec2{oldCenterX - (oldWidth / 2), oldCenterY + (oldWidth / 2)}
-	newCenterNE := Vec2{oldCenterX + (oldWidth / 2), oldCenterY + (oldWidth / 2)}
-	newCenterSW := Vec2{oldCenterX - (oldWidth / 2), oldCenterY - (oldWidth / 2)}
-	newCenterSE := Vec2{oldCenterX + (oldWidth / 2), oldCenterY - (oldWidth / 2)}
-	log.Printf("[~] \t newCenterNW: %v\n", newCenterNW)
-	log.Printf("[~] \t newCenterNE: %v\n", newCenterNE)
-	log.Printf("[~] \t newCenterSW: %v\n", newCenterSW)
-	log.Printf("[~] \t newCenterSE: %v\n", newCenterSE)
-	log.Println("[+] Done defining the new centerpoints!")
+	// Calculate the bounding box values for the new quadrants
+	newCenterNorthWest := Vec2{oldCenterX - (oldWidth / 4), oldCenterY + (oldWidth / 4)}
+	newCenterNorthEast := Vec2{oldCenterX + (oldWidth / 4), oldCenterY + (oldWidth / 4)}
+	newCenterSouthWest := Vec2{oldCenterX - (oldWidth / 4), oldCenterY - (oldWidth / 4)}
+	newCenterSouthEast := Vec2{oldCenterX + (oldWidth / 4), oldCenterY - (oldWidth / 4)}
 
-	log.Println("[ ] Calculating th new width")
-	log.Printf("[~] \t Old width: %f", oldWidth)
+	// Calculate the new width
 	newWidth := oldWidth / 2
-	log.Printf("[~] \t New width: %f", newWidth)
-	log.Println("[+] Done calculating the new width!")
 
-	log.Println("[ ] Generating the new bounding boxes")
-	NWboundingBox := NewBoundingBox(newCenterNW, newWidth)
-	NEboundingBox := NewBoundingBox(newCenterNE, newWidth)
-	SWboundingBox := NewBoundingBox(newCenterSW, newWidth)
-	SEboundingBox := NewBoundingBox(newCenterSE, newWidth)
-	log.Printf("[~] \t NW: %v", NWboundingBox)
-	log.Printf("[~] \t NE: %v", NEboundingBox)
-	log.Printf("[~] \t SW: %v", SWboundingBox)
-	log.Printf("[~] \t SE: %v", SEboundingBox)
-	log.Println("[+] Done generating the new bounding boxes!")
+	// Define the new bounding boxes using the values calculated above
+	NorthWestBoundingBox := NewBoundingBox(newCenterNorthWest, newWidth)
+	NorthEastBoundingBox := NewBoundingBox(newCenterNorthEast, newWidth)
+	SouthWestBoundingBox := NewBoundingBox(newCenterSouthWest, newWidth)
+	SouthEastBoundingBox := NewBoundingBox(newCenterSouthEast, newWidth)
 
-	log.Println("[ ] assigning the bounding boxes to the individual quadrants")
-	log.Printf("[~] \t root quadtree: %v\n", q)
-	log.Printf("[~] \t NW quadtree: %v\n", NewQuadtree(NWboundingBox))
-	log.Printf("[~] \t NE quadtree: %v\n", NewQuadtree(NEboundingBox))
-	log.Printf("[~] \t SW quadtree: %v\n", NewQuadtree(SWboundingBox))
-	log.Printf("[~] \t SE quadtree: %v\n", NewQuadtree(SEboundingBox))
-	q.Quadrants[0] = NewQuadtree(NWboundingBox)
-	q.Quadrants[1] = NewQuadtree(NEboundingBox)
-	q.Quadrants[2] = NewQuadtree(SWboundingBox)
-	q.Quadrants[3] = NewQuadtree(SEboundingBox)
-	log.Println("[+] Done assigning the bounding boxes to the individual quadrants!")
+	// Generate new quadrants using the new bounding boxes and assign them to the quadtree
+	q.Quadrants[0] = NewQuadtree(NorthWestBoundingBox)
+	q.Quadrants[1] = NewQuadtree(NorthEastBoundingBox)
+	q.Quadrants[2] = NewQuadtree(SouthWestBoundingBox)
+	q.Quadrants[3] = NewQuadtree(SouthEastBoundingBox)
 }
