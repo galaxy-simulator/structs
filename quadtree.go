@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"fmt"
 	"log"
 )
 
@@ -130,13 +131,12 @@ func (q *Quadtree) Insert(point Star2D) {
 	// Insert thee given star into the galaxy
 	// Case 1: There is no star inside of the node
 	if q.Star == (Star2D{Vec2{}, Vec2{}, 0}) {
-		log.Printf("[ + ] There was no star inside of the node -> inserting directly")
+		log.Printf("[   ] There was no star inside of the node -> inserting directly")
 		q.Star = point
-		return
 
 		// Case 2: There is all ready a star inside of the node
 	} else {
-		log.Printf("[ + ] There is allready a star inside of the node -> subdividing")
+		log.Printf("[ ! ] There is allready a star inside of the node -> subdividing")
 
 		// Test if the star is left or right of the center point
 		if point.C.X < bx && point.C.X > bx-bw {
@@ -196,6 +196,23 @@ func (q *Quadtree) Insert(point Star2D) {
 	}
 
 	log.Printf("[   ] Tree after insertion: %v", q)
+	q.print()
+}
+
+// print recursively prints the given quadtree
+func (q *Quadtree) print() {
+
+	// iterate over all four child nodes
+	for i := 0; i < 4; i++ {
+
+		// if the child node is no an empty tree, print it
+		if *q.Quadrants[i] != (Quadtree{}) {
+			fmt.Println(q.Quadrants[i])
+
+			// make a recursive call on the child printing all it's quadtrees
+			q.Quadrants[i].print()
+		}
+	}
 }
 
 // subdivide subdivides the quadtree it is called on

@@ -42,7 +42,7 @@ func drawQuadtree(context *gg.Context, q Quadtree) {
 			// define the current star
 			x := q.Star.C.X
 			y := q.Star.C.Y
-			starsize := 1
+			starsize := 2
 
 			// set the color of the stars to green
 			context.SetRGB(0, 1, 1)
