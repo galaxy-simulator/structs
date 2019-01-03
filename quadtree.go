@@ -110,7 +110,7 @@ func NewQuadtree(boundary BoundingBox) *Quadtree {
 func (q *Quadtree) Insert(point Star2D) {
 	log.Printf("[   ] Inserting point %v into the tree %v", point, q)
 
-	// prints the stars in the leaves of the current node
+	// prints the stars inside of the leaves of the current node
 	log.Printf("[>>>] - Current Star [node]: %v", q.Star)
 	for i := 0; i < 4; i++ {
 		if q.Quadrants[i] != nil {
@@ -120,7 +120,7 @@ func (q *Quadtree) Insert(point Star2D) {
 		}
 	}
 
-	// create a shortcut for the various bounding box variables
+	// create shortcuts for the various bounding box variables
 	bx := q.Boundary.Center.X
 	by := q.Boundary.Center.Y
 	bw := q.Boundary.Width
@@ -128,13 +128,18 @@ func (q *Quadtree) Insert(point Star2D) {
 	log.Printf("[ ~ ] \t Bounding Box Y: %f", by)
 	log.Printf("[ ~ ] \t Bounding Box Width: %f", bw)
 
-	// Insert thee given star into the galaxy
+	// Insert thee given star into the tree
 	// Case 1: There is no star inside of the node
 	if q.Star == (Star2D{Vec2{}, Vec2{}, 0}) {
 		log.Printf("[   ] There was no star inside of the node -> inserting directly")
 		q.Star = point
 
-		// Case 2: There is all ready a star inside of the node
+		// if the star is not a leaf, try to insert the star into the correct leaf
+		// if there all ready is a star inside of the leaf, subdivide that leaf and insert the two nodes recursively
+		// into that leaf
+		// TODO: implement the comment above
+
+	// Case 2: There is all ready a star inside of the node
 	} else {
 		log.Printf("[ ! ] There is allready a star inside of the node -> subdividing")
 
@@ -195,12 +200,14 @@ func (q *Quadtree) Insert(point Star2D) {
 		}
 	}
 
-	log.Printf("[   ] Tree after insertion: %v", q)
-	q.print()
+	// log.Printf("[   ] Tree after insertion: %v", *q)
+	// q.print()
 }
 
 // print recursively prints the given quadtree
 func (q *Quadtree) print() {
+
+	log.Printf("[   ] Beginning of the print function ")
 
 	// iterate over all four child nodes
 	for i := 0; i < 4; i++ {
@@ -213,6 +220,8 @@ func (q *Quadtree) print() {
 			q.Quadrants[i].print()
 		}
 	}
+
+	log.Printf("[   ] End of the print function ")
 }
 
 // subdivide subdivides the quadtree it is called on
