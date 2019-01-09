@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/fogleman/gg"
@@ -87,8 +88,8 @@ func saveImage(context *gg.Context, outpath string) {
 	}
 }
 
-// Draw draws the given quadtree to the given output path
-func (q Quadtree) Draw(outpath string) {
+// DrawGalaxy draws the given quadtree to the given output path
+func (q Quadtree) DrawGalaxy(outpath string) {
 	log.Printf("Drawing the quadtree to %s", outpath)
 
 	// define the image dimensions
@@ -103,4 +104,53 @@ func (q Quadtree) Draw(outpath string) {
 
 	// save the context to the given output path
 	saveImage(context, outpath)
+}
+
+// GeneratePrintTree generates forest code for drawing a tree
+func (q Quadtree) GeneratePrintTree(depth int) string {
+	returnString := ""
+	if q.Star != (Star2D{}) {
+		returnString += "[a"
+		fmt.Printf("[a")
+	} else {
+		returnString += "["
+		fmt.Printf("[")
+	}
+
+	for i := 0; i < 4; i++ {
+		if q.Quadrants[i] != nil {
+			returnString += fmt.Sprintf("[%d]", depth)
+			returnString += q.Quadrants[i].GeneratePrintTree(depth + 1)
+		}
+	}
+
+	// ok, the reason the final image will only show the nodes in the leaf is, that in the latex
+	// forest package that I use, trees must be drawn like this: [a[b]] and not like this: [[b]a].
+	// [[b]a] == [[b]]. So there might be a lot of zeros, but that's ok!
+	if q.Star != (Star2D{}) {
+		returnString += "a]"
+		fmt.Printf("a]")
+	} else {
+		returnString += "]"
+		fmt.Printf("]")
+	}
+
+	return returnString
+}
+
+// DrawTree returns a valid LaTeX Document as a string drawing the quadtree it is called on using the forest package
+func (q Quadtree) DrawTree() string {
+	s1 := `\documentclass{article}
+\usepackage{tikz}
+\usepackage{forest}
+\begin{document}
+\begin{forest}
+for tree={circle,draw, s sep+=0.25em}`
+
+	s2 := q.GeneratePrintTree(0)
+
+	s3 := `\end{forest}
+\end{document}`
+
+	return fmt.Sprintf("%s\n%s\n%s\n", s1, s2, s3)
 }
