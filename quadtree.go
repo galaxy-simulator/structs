@@ -58,6 +58,7 @@ func (n *Node) subdivide() {
 
 // Insert inserts the given star into the Node or the tree it is called on
 func (n *Node) Insert(star Star2D) {
+	fmt.Printf("Hello, this is the insert function, I'm inserting the star %v", star)
 
 	// prevent the function to recurse to deep into the tree
 	if n.Boundry.Width < 0.1 {
@@ -95,8 +96,9 @@ func (n *Node) Insert(star Star2D) {
 		QuadrantBlockingNew := star.getRelativePositionInt(n.Boundry)
 		n.Subtrees[QuadrantBlockingNew].Insert(star)
 		star = Star2D{}
-
 	}
+
+	fmt.Println("Done inserting %v, the tree noe looks like this: %v", star, n)
 }
 
 // GenForestTree draws the subtree it is called on. If there is a star inside of the root node, the node is drawn
@@ -164,4 +166,29 @@ for tree={,draw, s sep+=0.25em}
 	if runerr != nil {
 		panic(runerr)
 	}
+}
+
+// GetAllStars returns all the stars in the tree it is called on in an array
+func (n Node) GetAllStars() []Star2D {
+
+	// define a list to store the stars
+	listOfNodes := []Star2D{}
+
+	// if there is a star in the node, append the star to the list
+	if n.Star != (Star2D{}) {
+		listOfNodes = append(listOfNodes, n.Star)
+	}
+
+	// iterate over all the subtrees
+	for i := 0; i < len(n.Subtrees); i++ {
+		if n.Subtrees[i] != nil {
+
+			// insert all the stars from the subtrees into the list of nodes
+			for _, star := range n.Subtrees[i].GetAllStars() {
+				listOfNodes = append(listOfNodes, star)
+			}
+		}
+	}
+
+	return listOfNodes
 }
