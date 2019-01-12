@@ -6,6 +6,7 @@ type BoundingBox struct {
 	Width  float64 // Width of the box
 }
 
+// NewBoundingBox returns a new Bounding Box using the centerpoint and the width given by the function parameters
 func NewBoundingBox(center Vec2, width float64) BoundingBox {
 	return BoundingBox{Center: center, Width: width}
 }

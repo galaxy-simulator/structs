@@ -36,35 +36,6 @@ func (s Star2D) InsideOf(boundary BoundingBox) bool {
 	}
 }
 
-// Quadrant returns a string indicating in which quadrant of the given quadtree the point the method
-// is applied on is.
-// This methods presumes that the point is inside of the boundingBox
-func (s Star2D) Quadrant(starsQuadtree *Quadtree) string {
-	centerX := starsQuadtree.Boundary.Center.X
-	centerY := starsQuadtree.Boundary.Center.Y
-
-	// test if the point is left the the Center or not
-	if s.C.X < centerX {
-
-		// Test if the point is above or below of the Center
-		if s.C.Y > centerY {
-			return "northwest"
-		} else {
-			return "southwest"
-		}
-
-		// The point is right of the Center
-	} else {
-
-		// Test if the point is above or below of the Center
-		if s.C.Y > centerY {
-			return "northeast"
-		} else {
-			return "southeast"
-		}
-	}
-}
-
 // Return a copy of the star by returning a star struct with the same values.
 func (s *Star2D) Copy() Star2D {
 	return Star2D{s.C.Copy(), s.V.Copy(), s.M}
@@ -87,4 +58,64 @@ func (s *Star2D) Move(t float64) {
 func (s *Star2D) Accelerate(a Vec2, t float64) {
 	s.AccelerateVelocity(a, t)
 	s.Move(t)
+}
+
+// posX determines if the star is the positive x region of the given boundary. If it is,
+// the method returns true, if not, it returns false
+func (star Star2D) posX(boundary BoundingBox) bool {
+
+	// define shortcuts
+	bx := boundary.Center.X
+	bw := boundary.Width / 2
+
+	if star.C.X > bx && star.C.X < bx+bw {
+		return true
+	} else {
+		return false
+	}
+}
+
+// posY determines if the star is the positive y region of the given boundary. If it is,
+// the method returns true, if not, it returns false
+func (star Star2D) posY(boundary BoundingBox) bool {
+
+	// define shortcuts
+	by := boundary.Center.Y
+	bw := boundary.Width / 2
+
+	if star.C.Y > by && star.C.Y < by+bw {
+		return true
+	} else {
+		return false
+	}
+}
+
+// getRelativePosition returns the relative position of a star relative to the bounding
+// bounding box it is in. It returns the integer that is mapped to a cell in the Node
+// definition
+func (star Star2D) getRelativePosition(boundary BoundingBox) string {
+	if star.posX(boundary) == true {
+		if star.posY(boundary) == true {
+			return "NE"
+		} else {
+			return "SE"
+		}
+	} else {
+		if star.posY(boundary) == true {
+			return "NW"
+		} else {
+			return "SW"
+		}
+	}
+}
+
+func (star Star2D) getRelativePositionInt(boundary BoundingBox) int {
+	quadrantMap := make(map[string]int)
+	quadrantMap["NW"] = 0
+	quadrantMap["NE"] = 1
+	quadrantMap["SW"] = 2
+	quadrantMap["SE"] = 3
+
+	QuadrantMapString := star.getRelativePosition(boundary)
+	return quadrantMap[QuadrantMapString]
 }
