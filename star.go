@@ -2,9 +2,9 @@ package structs
 
 // Define a struct storing essential star information such as it's coordinate, velocity and mass
 type Star2D struct {
-	C Vec2    // coordinates of the star
-	V Vec2    // velocity    of the star
-	M float64 // mass        of the star
+	C Vec2    `json:C` // coordinates of the star
+	V Vec2    `json:V` // velocity    of the star
+	M float64 `json:M` // mass        of the star
 }
 
 func NewStar2D(c Vec2, v Vec2, m float64) Star2D {
