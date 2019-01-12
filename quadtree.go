@@ -57,12 +57,12 @@ func (n *Node) subdivide() {
 }
 
 // Insert inserts the given star into the Node or the tree it is called on
-func (n *Node) Insert(star Star2D) {
-	fmt.Printf("Hello, this is the insert function, I'm inserting the star %v", star)
+func (n *Node) Insert(star Star2D) error {
+	// fmt.Printf("Hello, this is the insert function, I'm inserting the star %v", star)
 
 	// prevent the function to recurse to deep into the tree
-	if n.Boundry.Width < 0.1 {
-		return
+	if n.Boundry.Width < 0.000001 {
+		return fmt.Errorf("Could not insert star (%f, %f)\n", star.C.X, star.C.Y)
 	}
 
 	// if the subtree does not contain a node, insert the star
@@ -71,11 +71,15 @@ func (n *Node) Insert(star Star2D) {
 		// if a subtree is present, insert the star into that subtree
 		if n.Subtrees != [4]*Node{} {
 			QuadrantBlocking := star.getRelativePositionInt(n.Boundry)
-			n.Subtrees[QuadrantBlocking].Insert(star)
+			err := n.Subtrees[QuadrantBlocking].Insert(star)
+			if err != nil {
+				fmt.Println(err)
+			}
 
 			// directly insert the star into the node
 		} else {
 			n.Star = star
+			fmt.Printf("Direct insert of (%f, %f)\n", star.C.X, star.C.Y)
 		}
 
 		// Move the star blocking the slot into it's subtree using a recursive call on this function
@@ -89,16 +93,23 @@ func (n *Node) Insert(star Star2D) {
 
 		// Insert the blocking star into it's subtree
 		QuadrantBlocking := n.Star.getRelativePositionInt(n.Boundry)
-		n.Subtrees[QuadrantBlocking].Insert(n.Star)
+		err := n.Subtrees[QuadrantBlocking].Insert(n.Star)
+		if err != nil {
+			fmt.Println(err)
+		}
 		n.Star = Star2D{}
 
 		// Insert the blocking star into it's subtree
 		QuadrantBlockingNew := star.getRelativePositionInt(n.Boundry)
-		n.Subtrees[QuadrantBlockingNew].Insert(star)
+		err = n.Subtrees[QuadrantBlockingNew].Insert(star)
+		if err != nil {
+			fmt.Println(err)
+		}
 		star = Star2D{}
 	}
 
-	fmt.Println("Done inserting %v, the tree noe looks like this: %v", star, n)
+	// fmt.Println("Done inserting %v, the tree noe looks like this: %v", star, n)
+	return nil
 }
 
 // GenForestTree draws the subtree it is called on. If there is a star inside of the root node, the node is drawn
@@ -191,4 +202,56 @@ func (n Node) GetAllStars() []Star2D {
 	}
 
 	return listOfNodes
+}
+
+// CalcCenterOfMass calculates the center of mass for every node in the treee
+func (n *Node) CalcCenterOfMass() {
+	meanPosX := 0.0
+	meanPosY := 0.0
+	totalMass := 0.0
+
+	// if the subtree is not empty
+	if n.Subtrees != ([4]*Node{}) {
+
+		// iterate over all the subtrees
+		for index, _ := range n.Subtrees {
+
+			// calculate the center of mass of the subtree
+			n.Subtrees[index].CalcCenterOfMass()
+
+			if n.Subtrees[index].TotalMass == 0 {
+				n.Subtrees[index].CalcTotalMass()
+			}
+
+			meanPosX += n.Subtrees[index].CenterOfMass.X * n.Subtrees[index].TotalMass
+			meanPosY += n.Subtrees[index].CenterOfMass.Y * n.Subtrees[index].TotalMass
+			totalMass += n.Subtrees[index].TotalMass
+		}
+	}
+	meanPosX = meanPosX / totalMass
+	meanPosY = meanPosY / totalMass
+
+	n.TotalMass = totalMass
+	n.CenterOfMass = Vec2{meanPosX, meanPosY}
+}
+
+// CalcTotalMass calculates the total mass for every node in the tree
+func (n *Node) CalcTotalMass() {
+	totalMass := 0.0
+
+	// if the subtree is not empty
+	if n.Subtrees != ([4]*Node{}) {
+
+		// iterate over all the subtrees
+		for index, _ := range n.Subtrees {
+
+			totalMass += n.Subtrees[index].Star.M
+
+			// calculate the mass of the subtree and add it to the totalmass
+			n.Subtrees[index].CalcTotalMass()
+			totalMass += n.Subtrees[index].TotalMass
+		}
+	}
+
+	n.TotalMass = totalMass
 }
