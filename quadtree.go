@@ -1,6 +1,7 @@
 package structs
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os/exec"
@@ -169,14 +170,19 @@ for tree={,draw, s sep+=0.25em}
 }
 
 // GetAllStars returns all the stars in the tree it is called on in an array
-func (n Node) GetAllStars() []Star2D {
+func (n Node) GetAllStars() []string {
 
 	// define a list to store the stars
-	listOfNodes := []Star2D{}
+	listOfNodes := []string{}
 
 	// if there is a star in the node, append the star to the list
 	if n.Star != (Star2D{}) {
-		listOfNodes = append(listOfNodes, n.Star)
+		starJson, err := json.Marshal(n.Star)
+		if err != nil {
+			panic(err)
+		}
+
+		listOfNodes = append(listOfNodes, string(starJson))
 	}
 
 	// iterate over all the subtrees
