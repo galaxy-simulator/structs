@@ -3,6 +3,8 @@ package structs
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
+	"math"
 	"os/exec"
 )
 
@@ -205,53 +207,149 @@ func (n Node) GetAllStars() []Star2D {
 }
 
 // CalcCenterOfMass calculates the center of mass for every node in the treee
-func (n *Node) CalcCenterOfMass() {
-	meanPosX := 0.0
-	meanPosY := 0.0
-	totalMass := 0.0
+func (n *Node) CalcCenterOfMass() Vec2 {
+	fmt.Printf("[CalcCenterOfMass] %v\n", n.Boundry.Width)
 
-	// if the subtree is not empty
+	if n.Boundry.Width < 10 {
+		return Vec2{}
+	}
+
+	// if the subtrees are not empty
 	if n.Subtrees != ([4]*Node{}) {
+		for i := 0; i < len(n.Subtrees); i++ {
+			// get the center of mass for the subtree
+			subtreeCenterOfMassX := n.Subtrees[i].CalcCenterOfMass().X
+			subtreeCenterOfMassY := n.Subtrees[i].CalcCenterOfMass().Y
 
-		// iterate over all the subtrees
-		for index, _ := range n.Subtrees {
+			// get the totalmass of the subtree
+			subtreeTotalMass := n.Subtrees[i].TotalMass
 
-			// calculate the center of mass of the subtree
-			n.Subtrees[index].CalcCenterOfMass()
-
-			if n.Subtrees[index].TotalMass == 0 {
-				n.Subtrees[index].CalcTotalMass()
-			}
-
-			meanPosX += n.Subtrees[index].CenterOfMass.X * n.Subtrees[index].TotalMass
-			meanPosY += n.Subtrees[index].CenterOfMass.Y * n.Subtrees[index].TotalMass
-			totalMass += n.Subtrees[index].TotalMass
+			// calculate the center of mass of both
+			n.CenterOfMass.X = subtreeCenterOfMassX * subtreeTotalMass
+			n.CenterOfMass.Y = subtreeCenterOfMassY * subtreeTotalMass
 		}
 	}
-	meanPosX = meanPosX / totalMass
-	meanPosY = meanPosY / totalMass
 
-	n.TotalMass = totalMass
-	n.CenterOfMass = Vec2{meanPosX, meanPosY}
+	if n.Star != (Star2D{}) {
+		n.CenterOfMass = n.Star.C
+	}
+
+	n.CenterOfMass.X = n.CenterOfMass.X / n.TotalMass
+	n.CenterOfMass.Y = n.CenterOfMass.Y / n.TotalMass
+
+	return n.CenterOfMass
 }
 
 // CalcTotalMass calculates the total mass for every node in the tree
-func (n *Node) CalcTotalMass() {
-	totalMass := 0.0
+func (n *Node) CalcTotalMass() float64 {
 
-	// if the subtree is not empty
+	// if the subtrees are not empty
 	if n.Subtrees != ([4]*Node{}) {
-
-		// iterate over all the subtrees
-		for index, _ := range n.Subtrees {
-
-			totalMass += n.Subtrees[index].Star.M
-
-			// calculate the mass of the subtree and add it to the totalmass
-			n.Subtrees[index].CalcTotalMass()
-			totalMass += n.Subtrees[index].TotalMass
+		for i := 0; i < len(n.Subtrees); i++ {
+			n.TotalMass += n.Subtrees[i].CalcTotalMass()
 		}
 	}
 
-	n.TotalMass = totalMass
+	// if the star in the subtree is not empty
+	if n.Star != (Star2D{}) {
+		n.TotalMass += n.Star.M
+	}
+
+	return n.TotalMass
+}
+
+func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
+	// initialize a variable storing the overall force
+	var localForce Vec2 = Vec2{}
+	log.Printf("[CalcAllforces] Boundary Width: %f", n.Boundry.Width)
+
+	// calculate the local theta
+	var tmpX float64 = math.Pow(star.C.X-n.Star.C.X, 2)
+	var tmpY float64 = math.Pow(star.C.Y-n.Star.C.Y, 2)
+	var distance float64 = math.Sqrt(tmpX + tmpY)
+
+	log.Printf("[CalcAllforces] n.Boundary.Width=%f", n.Boundry.Width)
+	log.Printf("[CalcAllforces] distance=%f", distance)
+	var localtheta float64 = n.Boundry.Width / distance
+	log.Printf("[CalcAllforces] localtheta=%f", localtheta)
+
+	// if the subtree is not empty
+	if n.Subtrees != ([4]*Node{}) {
+		if localtheta < theta {
+			log.Printf("[CalcAllforces] not recursing deeper ++++++++++++++++++++++++ ")
+			// don't recurse further into the tree
+			// calculate the forces inbetween the star and the node
+
+			nodeStar := Star2D{
+				C: Vec2{
+					X: n.CenterOfMass.X,
+					Y: n.CenterOfMass.Y,
+				},
+				V: Vec2{
+					X: 0,
+					Y: 0,
+				},
+				M: n.TotalMass,
+			}
+
+			if star != nodeStar {
+				log.Printf("[CalcAllforces] (%v) < +++++++ > (%v)\n", star, nodeStar)
+				force := CalcForce(star, nodeStar)
+				localForce.X += force.X
+				localForce.Y += force.Y
+			}
+
+		} else {
+			log.Printf("[CalcAllforces] recursing deeper ----------------------------")
+			// recurse deeper
+			for i := 0; i < len(n.Subtrees); i++ {
+				force := n.Subtrees[i].CalcAllForces(star, theta)
+				localForce.X += force.X
+				localForce.Y += force.Y
+			}
+		}
+	} else {
+		if n.Star != (Star2D{}) {
+			if star != n.Star {
+				log.Printf("[CalcAllforces] not recursing deeper ====================== ")
+				log.Printf("[CalcAllforces] (%v) < ------- > (%v)\n", star, n.Star)
+				force := CalcForce(star, n.Star)
+				localForce.X += force.X
+				localForce.Y += force.Y
+			}
+		}
+	}
+
+	log.Printf("[CalcAllforces] localforce: %v +-+-+-+-+-+-+-+-+-+- ", localForce)
+	return localForce
+
+}
+
+// CalcForce calculates the force exerted on s1 by s2 and returns a vector representing that force
+func CalcForce(s1 Star2D, s2 Star2D) Vec2 {
+	G := 6.6726 * math.Pow(10, -11)
+
+	// calculate the force acting
+	var combinedMass float64 = s1.M * s2.M
+	var distance float64 = math.Sqrt(math.Pow(math.Abs(s1.C.X-s2.C.X), 2) + math.Pow(math.Abs(s1.C.Y-s2.C.Y), 2))
+	fmt.Printf("\t- combinedMass: %f\n", combinedMass)
+	fmt.Printf("\t- distance: %f\n", distance)
+	fmt.Printf("\t- distance squared: %f\n", math.Pow(distance, 2))
+	fmt.Printf("\t- combinedMass / distance: %f\n", combinedMass/math.Pow(distance, 2))
+
+	var scalar float64 = G * ((combinedMass) / math.Pow(distance, 2))
+	fmt.Printf("\t- Scalar: %f\n", scalar)
+
+	// define a unit vector pointing from s1 to s2
+	var vector Vec2 = Vec2{s2.C.X - s1.C.X, s2.C.Y - s1.C.Y}
+	var UnitVector Vec2 = Vec2{vector.X / distance, vector.Y / distance}
+	fmt.Printf("\t- Vector: %v\n", vector)
+	fmt.Printf("\t- UnitVector: %v\n", UnitVector)
+
+	// multiply the vector with the force to get a vector representing the force acting
+	var force Vec2 = UnitVector.Multiply(scalar)
+	fmt.Printf("\t- force: %v\n", force)
+
+	// return the force exerted on s1 by s2
+	return force
 }
