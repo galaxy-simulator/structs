@@ -257,7 +257,10 @@ func (n *Node) CalcTotalMass() float64 {
 	return n.TotalMass
 }
 
+// CalcAllForces calculates the force acting in between the given star and all the other stars using the given theta.
+// It gets all the other stars from the root node it is called on
 func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
+
 	// initialize a variable storing the overall force
 	var localForce Vec2 = Vec2{}
 	log.Printf("[CalcAllforces] Boundary Width: %f", n.Boundry.Width)
@@ -272,13 +275,16 @@ func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
 	var localtheta float64 = n.Boundry.Width / distance
 	log.Printf("[CalcAllforces] localtheta=%f", localtheta)
 
-	// if the subtree is not empty
+	// if the subtree is not empty...
 	if n.Subtrees != ([4]*Node{}) {
+
+		// if the local theta is smaller than the given theta threshold...
 		if localtheta < theta {
 			log.Printf("[CalcAllforces] not recursing deeper ++++++++++++++++++++++++ ")
 			// don't recurse further into the tree
-			// calculate the forces inbetween the star and the node
+			// calculate the forces in between the star and the node
 
+			// define a new star using the center of mass of the new stars
 			nodeStar := Star2D{
 				C: Vec2{
 					X: n.CenterOfMass.X,
@@ -291,27 +297,41 @@ func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
 				M: n.TotalMass,
 			}
 
+			// if the star is not equal to the node star, calculate the forces
 			if star != nodeStar {
 				log.Printf("[CalcAllforces] (%v) < +++++++ > (%v)\n", star, nodeStar)
+
+				// calculate the force on the individual star
 				force := CalcForce(star, nodeStar)
 				localForce.X += force.X
 				localForce.Y += force.Y
 			}
 
+			// the local theta is bigger than the given theta -> recurse deeper
 		} else {
 			log.Printf("[CalcAllforces] recursing deeper ----------------------------")
-			// recurse deeper
+
+			// iterate over all the subtrees
 			for i := 0; i < len(n.Subtrees); i++ {
 				force := n.Subtrees[i].CalcAllForces(star, theta)
 				localForce.X += force.X
 				localForce.Y += force.Y
 			}
 		}
+
+		// if the subtree is empty
 	} else {
+
+		// make sure the star in the subtree is not empty
 		if n.Star != (Star2D{}) {
+
+			// if the star is not the star on which the forces should be calculated
 			if star != n.Star {
+
 				log.Printf("[CalcAllforces] not recursing deeper ====================== ")
 				log.Printf("[CalcAllforces] (%v) < ------- > (%v)\n", star, n.Star)
+
+				// calculate the forces acting on the star
 				force := CalcForce(star, n.Star)
 				localForce.X += force.X
 				localForce.Y += force.Y
@@ -320,8 +340,9 @@ func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
 	}
 
 	log.Printf("[CalcAllforces] localforce: %v +-+-+-+-+-+-+-+-+-+- ", localForce)
-	return localForce
 
+	// return the overall acting force
+	return localForce
 }
 
 // CalcForce calculates the force exerted on s1 by s2 and returns a vector representing that force
