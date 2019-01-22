@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math"
+	"os"
 	"os/exec"
 )
 
@@ -42,7 +43,7 @@ func NewNode(bounadry BoundingBox) *Node {
 }
 
 // Subdivide the tree
-func (n *Node) subdivide() {
+func (n *Node) Subdivide() {
 
 	// define new values defining the new BoundaryBoxes
 	newBoundaryWidth := n.Boundry.Width / 2
@@ -89,7 +90,7 @@ func (n *Node) Insert(star Star2D) error {
 
 		// if the node does not all ready have child nodes, subdivide it
 		if n.Subtrees == ([4]*Node{}) {
-			n.subdivide()
+			n.Subdivide()
 		}
 
 		// Insert the blocking star into it's subtree
@@ -205,38 +206,49 @@ func (n Node) GetAllStars() []Star2D {
 	return listOfNodes
 }
 
-// CalcCenterOfMass calculates the center of mass for every node in the treee
-func (n *Node) CalcCenterOfMass() Vec2 {
-	fmt.Printf("[CalcCenterOfMass] %v\n", n.Boundry.Width)
+// CalcCenterOfMass calculates the center of mass for every node in the tree
+func (n *Node) calcCenterOfMass() Vec2 {
 
-	if n.Boundry.Width < 10 {
-		return Vec2{}
-	}
+	nominatorX := 0.0
+	denominatorX := 0.0
+
+	nominatorY := 0.0
+	denominatorY := 0.0
 
 	// if the subtrees are not empty
 	if n.Subtrees != ([4]*Node{}) {
+		for _, star := range n.Subtrees {
+			fmt.Println(star)
+		}
 		for i := 0; i < len(n.Subtrees); i++ {
-			// get the center of mass for the subtree
-			subtreeCenterOfMassX := n.Subtrees[i].CalcCenterOfMass().X
-			subtreeCenterOfMassY := n.Subtrees[i].CalcCenterOfMass().Y
+			nominatorX += n.Subtrees[i].calcCenterOfMass().X * n.Subtrees[i].TotalMass
+			denominatorX += n.Subtrees[i].TotalMass
 
-			// get the totalmass of the subtree
-			subtreeTotalMass := n.Subtrees[i].TotalMass
-
-			// calculate the center of mass of both
-			n.CenterOfMass.X = subtreeCenterOfMassX * subtreeTotalMass
-			n.CenterOfMass.Y = subtreeCenterOfMassY * subtreeTotalMass
+			nominatorY += n.Subtrees[i].calcCenterOfMass().Y * n.Subtrees[i].TotalMass
+			denominatorY += n.Subtrees[i].TotalMass
 		}
 	}
 
 	if n.Star != (Star2D{}) {
 		n.CenterOfMass = n.Star.C
+		fmt.Println(n.Star)
 	}
 
-	n.CenterOfMass.X = n.CenterOfMass.X / n.TotalMass
-	n.CenterOfMass.Y = n.CenterOfMass.Y / n.TotalMass
+	comX := nominatorX / denominatorX
+	comY := nominatorY / denominatorY
+	fmt.Printf("nomX: %f \t denomX: %f\n", nominatorX, denominatorX)
+	fmt.Printf("nomY: %f \t denomY: %f\n", nominatorY, denominatorY)
+
+	n.CenterOfMass = Vec2{comX, comY}
 
 	return n.CenterOfMass
+}
+
+func (n *Node) CalcCenterOfMass() Vec2 {
+	tree := n.GenForestTree(n)
+	fmt.Println(tree)
+	centerOfMass := n.calcCenterOfMass()
+	return centerOfMass
 }
 
 // CalcTotalMass calculates the total mass for every node in the tree
@@ -260,6 +272,7 @@ func (n *Node) CalcTotalMass() float64 {
 // CalcAllForces calculates the force acting in between the given star and all the other stars using the given theta.
 // It gets all the other stars from the root node it is called on
 func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
+	log.SetOutput(os.Stderr)
 
 	// initialize a variable storing the overall force
 	var localForce Vec2 = Vec2{}
