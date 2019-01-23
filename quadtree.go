@@ -67,6 +67,7 @@ func (n *Node) Insert(star Star2D) error {
 
 		// if a subtree is present, insert the star into that subtree
 		if n.Subtrees != [4]*Node{} {
+			fmt.Printf("[ A ]\n")
 			QuadrantBlocking := star.getRelativePositionInt(n.Boundry)
 			err := n.Subtrees[QuadrantBlocking].Insert(star)
 			if err != nil {
@@ -75,8 +76,9 @@ func (n *Node) Insert(star Star2D) error {
 
 			// directly insert the star into the node
 		} else {
+			fmt.Printf("[ B ] (Direct insert if (%f, %f)\n)", star.C.X, star.C.Y)
 			n.Star = star
-			fmt.Printf("Direct insert of (%f, %f)\n", star.C.X, star.C.Y)
+			return nil
 		}
 
 		// Move the star blocking the slot into it's subtree using a recursive call on this function
@@ -85,6 +87,7 @@ func (n *Node) Insert(star Star2D) error {
 
 		// if the node does not all ready have child nodes, subdivide it
 		if n.Subtrees == ([4]*Node{}) {
+			fmt.Printf("[ C ] Sudivision\n")
 			n.Subdivide()
 		}
 
