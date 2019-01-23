@@ -62,6 +62,10 @@ func (n *Node) Subdivide() {
 // Insert inserts the given star into the Node or the tree it is called on
 func (n *Node) Insert(star Star2D) error {
 
+	if n.Boundry.Width < 1e-20 {
+		return fmt.Errorf("%s", "Max Recursion depth reached!")
+	}
+
 	// if the subtree does not contain a node, insert the star
 	if n.Star == (Star2D{}) {
 
@@ -105,7 +109,7 @@ func (n *Node) Insert(star Star2D) error {
 		star = Star2D{}
 	}
 
-	// fmt.Println("Done inserting %v, the tree noe looks like this: %v", star, n)
+	// fmt.Println("Done inserting %v, the tree looks like this: %v", star, n)
 	return nil
 }
 
