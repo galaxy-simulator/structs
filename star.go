@@ -36,6 +36,12 @@ func (s Star2D) InsideOf(boundary BoundingBox) bool {
 	}
 }
 
+// calcNewPos calculates the new position of a star using the force acting on it
+func (s *Star2D) CalcNewPos(force Vec2, timestep float64) {
+	acceleration := NewVec2(force.X/s.M, force.Y/s.M)
+	s.Accelerate(acceleration, timestep)
+}
+
 // Return a copy of the star by returning a star struct with the same values.
 func (s *Star2D) Copy() Star2D {
 	return Star2D{s.C.Copy(), s.V.Copy(), s.M}
