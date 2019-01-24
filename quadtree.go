@@ -67,7 +67,6 @@ func (n *Node) Insert(star Star2D) error {
 
 		// if a subtree is present, insert the star into that subtree
 		if n.Subtrees != [4]*Node{} {
-			fmt.Printf("[ A ]\n")
 			QuadrantBlocking := star.getRelativePositionInt(n.Boundry)
 			err := n.Subtrees[QuadrantBlocking].Insert(star)
 			if err != nil {
@@ -76,7 +75,6 @@ func (n *Node) Insert(star Star2D) error {
 
 			// directly insert the star into the node
 		} else {
-			fmt.Printf("[ B ] (Direct insert if (%f, %f)\n)", star.C.X, star.C.Y)
 			n.Star = star
 			return nil
 		}
@@ -87,7 +85,6 @@ func (n *Node) Insert(star Star2D) error {
 
 		// if the node does not all ready have child nodes, subdivide it
 		if n.Subtrees == ([4]*Node{}) {
-			fmt.Printf("[ C ] Sudivision\n")
 			n.Subdivide()
 		}
 
@@ -234,8 +231,6 @@ func (n *Node) calcCenterOfMass() Vec2 {
 
 	comX := nominatorX / denominatorX
 	comY := nominatorY / denominatorY
-	fmt.Printf("nomX: %f \t denomX: %f\n", nominatorX, denominatorX)
-	fmt.Printf("nomY: %f \t denomY: %f\n", nominatorY, denominatorY)
 
 	n.CenterOfMass = Vec2{comX, comY}
 
@@ -274,24 +269,19 @@ func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
 
 	// initialize a variable storing the overall force
 	var localForce Vec2 = Vec2{}
-	log.Printf("[CalcAllforces] Boundary Width: %f", n.Boundry.Width)
 
 	// calculate the local theta
 	var tmpX float64 = math.Pow(star.C.X-n.Star.C.X, 2)
 	var tmpY float64 = math.Pow(star.C.Y-n.Star.C.Y, 2)
 	var distance float64 = math.Sqrt(tmpX + tmpY)
 
-	log.Printf("[CalcAllforces] n.Boundary.Width=%f", n.Boundry.Width)
-	log.Printf("[CalcAllforces] distance=%f", distance)
 	var localtheta float64 = n.Boundry.Width / distance
-	log.Printf("[CalcAllforces] localtheta=%f", localtheta)
 
 	// if the subtree is not empty...
 	if n.Subtrees != ([4]*Node{}) {
 
 		// if the local theta is smaller than the given theta threshold...
 		if localtheta < theta {
-			log.Printf("[CalcAllforces] not recursing deeper ++++++++++++++++++++++++ ")
 			// don't recurse further into the tree
 			// calculate the forces in between the star and the node
 
@@ -310,7 +300,6 @@ func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
 
 			// if the star is not equal to the node star, calculate the forces
 			if star != nodeStar {
-				log.Printf("[CalcAllforces] (%v) < +++++++ > (%v)\n", star, nodeStar)
 
 				// calculate the force on the individual star
 				force := CalcForce(star, nodeStar)
@@ -320,7 +309,6 @@ func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
 
 			// the local theta is bigger than the given theta -> recurse deeper
 		} else {
-			log.Printf("[CalcAllforces] recursing deeper ----------------------------")
 
 			// iterate over all the subtrees
 			for i := 0; i < len(n.Subtrees); i++ {
@@ -339,9 +327,6 @@ func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
 			// if the star is not the star on which the forces should be calculated
 			if star != n.Star {
 
-				log.Printf("[CalcAllforces] not recursing deeper ====================== ")
-				log.Printf("[CalcAllforces] (%v) < ------- > (%v)\n", star, n.Star)
-
 				// calculate the forces acting on the star
 				force := CalcForce(star, n.Star)
 				localForce.X += force.X
@@ -349,8 +334,6 @@ func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
 			}
 		}
 	}
-
-	log.Printf("[CalcAllforces] localforce: %v +-+-+-+-+-+-+-+-+-+- ", localForce)
 
 	// return the overall acting force
 	return localForce
@@ -363,23 +346,15 @@ func CalcForce(s1 Star2D, s2 Star2D) Vec2 {
 	// calculate the force acting
 	var combinedMass float64 = s1.M * s2.M
 	var distance float64 = math.Sqrt(math.Pow(math.Abs(s1.C.X-s2.C.X), 2) + math.Pow(math.Abs(s1.C.Y-s2.C.Y), 2))
-	fmt.Printf("\t- combinedMass: %f\n", combinedMass)
-	fmt.Printf("\t- distance: %f\n", distance)
-	fmt.Printf("\t- distance squared: %f\n", math.Pow(distance, 2))
-	fmt.Printf("\t- combinedMass / distance: %f\n", combinedMass/math.Pow(distance, 2))
 
 	var scalar float64 = G * ((combinedMass) / math.Pow(distance, 2))
-	fmt.Printf("\t- Scalar: %f\n", scalar)
 
 	// define a unit vector pointing from s1 to s2
 	var vector Vec2 = Vec2{s2.C.X - s1.C.X, s2.C.Y - s1.C.Y}
 	var UnitVector Vec2 = Vec2{vector.X / distance, vector.Y / distance}
-	fmt.Printf("\t- Vector: %v\n", vector)
-	fmt.Printf("\t- UnitVector: %v\n", UnitVector)
 
 	// multiply the vector with the force to get a vector representing the force acting
 	var force Vec2 = UnitVector.Multiply(scalar)
-	fmt.Printf("\t- force: %v\n", force)
 
 	// return the force exerted on s1 by s2
 	return force
