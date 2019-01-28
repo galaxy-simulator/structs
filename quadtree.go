@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"os/exec"
+	"sync"
 )
 
 type Node struct {
@@ -61,10 +62,11 @@ func (n *Node) Subdivide() {
 
 // Insert inserts the given star into the Node or the tree it is called on
 func (n *Node) Insert(star Star2D) error {
+	var mutex = &sync.Mutex{}
+	mutex.Lock()
 
 	// if the subtree does not contain a node, insert the star
 	if n.Star == (Star2D{}) {
-
 		// if a subtree is present, insert the star into that subtree
 		if n.Subtrees != [4]*Node{} {
 			QuadrantBlocking := star.getRelativePositionInt(n.Boundry)
@@ -82,7 +84,6 @@ func (n *Node) Insert(star Star2D) error {
 		// Move the star blocking the slot into it's subtree using a recursive call on this function
 		// and add the star to the slot
 	} else {
-
 		// if the node does not all ready have child nodes, subdivide it
 		if n.Subtrees == ([4]*Node{}) {
 			n.Subdivide()
@@ -104,6 +105,8 @@ func (n *Node) Insert(star Star2D) error {
 		}
 		star = Star2D{}
 	}
+
+	mutex.Unlock()
 
 	// fmt.Println("Done inserting %v, the tree looks like this: %v", star, n)
 	return nil
