@@ -5,8 +5,8 @@ import (
 )
 
 type Vec2 struct {
-	X float64 `json:X`
-	Y float64 `json:Y`
+	X float64 `json:"X"`
+	Y float64 `json:"Y"`
 }
 
 // newVec2 returns a new Vec2 using the given coordinates
