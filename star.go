@@ -1,12 +1,13 @@
 package structs
 
-// Define a struct storing essential star information such as it's coordinate, velocity and mass
+// Star2D defines a struct storing essential star information such as it's coordinate, velocity and mass
 type Star2D struct {
-	C Vec2    `json:C` // coordinates of the star
-	V Vec2    `json:V` // velocity    of the star
-	M float64 `json:M` // mass        of the star
+	C Vec2    `json:"C"` // coordinates of the star
+	V Vec2    `json:"V"` // velocity    of the star
+	M float64 `json:"M"` // mass        of the star
 }
 
+// NewStar2D returns a new star using the given arguments as values for the Star
 func NewStar2D(c Vec2, v Vec2, m float64) Star2D {
 	return Star2D{C: c, V: v, M: m}
 }
@@ -22,18 +23,12 @@ func (s Star2D) InsideOf(boundary BoundingBox) bool {
 			if s.C.Y < boundary.Center.Y+boundary.Width/2 {
 				if s.C.Y > boundary.Center.Y-boundary.Width/2 {
 					return true
-				} else {
-					return false
 				}
-			} else {
-				return false
 			}
-		} else {
-			return false
 		}
-	} else {
-		return false
 	}
+
+	return false
 }
 
 // calcNewPos calculates the new position of a star using the force acting on it
