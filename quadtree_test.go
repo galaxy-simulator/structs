@@ -156,7 +156,7 @@ func ExampleNode_Subdivide() {
 
 func TestNode_Subdivide(t *testing.T) {
 	type fields struct {
-		Boundry      BoundingBox
+		Boundary     BoundingBox
 		CenterOfMass Vec2
 		TotalMass    float64
 		Depth        int
@@ -170,7 +170,7 @@ func TestNode_Subdivide(t *testing.T) {
 		{
 			name: "Subdivide a tree from [100] to [[50][50][50][50]]",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -310,7 +310,7 @@ func TestNode_Subdivide(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &Node{
-				Boundary:     tt.fields.Boundry,
+				Boundary:     tt.fields.Boundary,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -457,7 +457,7 @@ func ExampleNode_Insert_error() {
 
 func TestNode_Insert(t *testing.T) {
 	type fields struct {
-		Boundry      BoundingBox
+		Boundary     BoundingBox
 		CenterOfMass Vec2
 		TotalMass    float64
 		Depth        int
@@ -476,7 +476,7 @@ func TestNode_Insert(t *testing.T) {
 		{
 			name: "Inserting a single star into a previously empty galaxy",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -520,7 +520,7 @@ func TestNode_Insert(t *testing.T) {
 		{
 			name: "Inserting a single star into a galaxy all ready containing a star",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -564,7 +564,7 @@ func TestNode_Insert(t *testing.T) {
 		{
 			name: "Inserting a single star onto the boundary limit",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -609,7 +609,7 @@ func TestNode_Insert(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &Node{
-				Boundary:     tt.fields.Boundry,
+				Boundary:     tt.fields.Boundary,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -678,7 +678,7 @@ func ExampleNode_GenForestTree_deepTree() {
 
 func TestNode_GenForestTree(t *testing.T) {
 	type fields struct {
-		Boundry      BoundingBox
+		Boundary     BoundingBox
 		CenterOfMass Vec2
 		TotalMass    float64
 		Depth        int
@@ -697,7 +697,7 @@ func TestNode_GenForestTree(t *testing.T) {
 		{
 			name: "Create a forest from a single node with four subnodes",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -758,7 +758,7 @@ func TestNode_GenForestTree(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := Node{
-				Boundary:     tt.fields.Boundry,
+				Boundary:     tt.fields.Boundary,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -785,7 +785,7 @@ func ExampleNode_DrawTreeLaTeX() {
 
 func TestNode_DrawTreeLaTeX(t *testing.T) {
 	type fields struct {
-		Boundry      BoundingBox
+		Boundary     BoundingBox
 		CenterOfMass Vec2
 		TotalMass    float64
 		Depth        int
@@ -803,7 +803,7 @@ func TestNode_DrawTreeLaTeX(t *testing.T) {
 		{
 			name: "Draw a tree using latex",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -837,7 +837,7 @@ func TestNode_DrawTreeLaTeX(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := Node{
-				Boundary:     tt.fields.Boundry,
+				Boundary:     tt.fields.Boundary,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -897,7 +897,7 @@ func ExampleNode_GetAllStars() {
 
 func TestNode_GetAllStars(t *testing.T) {
 	type fields struct {
-		Boundry      BoundingBox
+		Boundary     BoundingBox
 		CenterOfMass Vec2
 		TotalMass    float64
 		Depth        int
@@ -912,7 +912,7 @@ func TestNode_GetAllStars(t *testing.T) {
 		{
 			name: "",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -1098,7 +1098,7 @@ func TestNode_GetAllStars(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := Node{
-				Boundary:     tt.fields.Boundry,
+				Boundary:     tt.fields.Boundary,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -1136,7 +1136,7 @@ func ExampleNode_CalcCenterOfMass() {
 
 func TestNode_CalcCenterOfMass(t *testing.T) {
 	type fields struct {
-		Boundry      BoundingBox
+		Boundary     BoundingBox
 		CenterOfMass Vec2
 		TotalMass    float64
 		Depth        int
@@ -1151,7 +1151,7 @@ func TestNode_CalcCenterOfMass(t *testing.T) {
 		{
 			name: "Center of mass inbetween ",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -1295,7 +1295,7 @@ func TestNode_CalcCenterOfMass(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &Node{
-				Boundary:     tt.fields.Boundry,
+				Boundary:     tt.fields.Boundary,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -1316,7 +1316,7 @@ func ExampleNode_CalcTotalMass() {
 
 func TestNode_CalcTotalMass(t *testing.T) {
 	type fields struct {
-		Boundry      BoundingBox
+		Boundary     BoundingBox
 		CenterOfMass Vec2
 		TotalMass    float64
 		Depth        int
@@ -1331,7 +1331,7 @@ func TestNode_CalcTotalMass(t *testing.T) {
 		{
 			name: "Calculating the total mass two stars",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -1472,7 +1472,7 @@ func TestNode_CalcTotalMass(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &Node{
-				Boundary:     tt.fields.Boundry,
+				Boundary:     tt.fields.Boundary,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -1493,7 +1493,7 @@ func ExampleNode_CalcAllForces() {
 
 func TestNode_CalcAllForces(t *testing.T) {
 	type fields struct {
-		Boundry      BoundingBox
+		Boundary     BoundingBox
 		CenterOfMass Vec2
 		TotalMass    float64
 		Depth        int
@@ -1513,7 +1513,7 @@ func TestNode_CalcAllForces(t *testing.T) {
 		{
 			name: "single star",
 			fields: fields{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -1562,7 +1562,7 @@ func TestNode_CalcAllForces(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := Node{
-				Boundary:     tt.fields.Boundry,
+				Boundary:     tt.fields.Boundary,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
