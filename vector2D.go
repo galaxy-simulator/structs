@@ -16,6 +16,7 @@
 
 package structs
 
+// Vec2 defines a vector
 type Vec2 struct {
 	X float64 `json:"X"`
 	Y float64 `json:"Y"`
