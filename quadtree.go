@@ -10,6 +10,7 @@ import (
 	"sync"
 )
 
+// Node defines a node in the tree storing the galaxy
 type Node struct {
 	Boundary     BoundingBox // Spatial outreach of the quadtree
 	CenterOfMass Vec2        // Center of mass of the cell
@@ -38,7 +39,7 @@ func NewRoot(BoundingBoxWidth float64) *Node {
 	}
 }
 
-// Create a new new node using the given bounding box
+// NewNode creates a new new node using the given bounding box
 func NewNode(bounadry BoundingBox) *Node {
 	return &Node{Boundary: bounadry}
 }
@@ -240,6 +241,7 @@ func (n *Node) calcCenterOfMass() Vec2 {
 	return n.CenterOfMass
 }
 
+// CalcCenterOfMass calculates the center of mass for every node in the tree
 func (n *Node) CalcCenterOfMass() Vec2 {
 	tree := n.GenForestTree(n)
 	fmt.Println(tree)
