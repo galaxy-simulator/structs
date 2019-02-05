@@ -30,14 +30,14 @@ func NewStar2D(c Vec2, v Vec2, m float64) Star2D {
 
 // InsideOf is a method that tests if the star it is applied on is in or outside of the given
 // BoundingBox. It returns true if the star is inside of the BoundingBox and false if it isn't.
-func (s Star2D) InsideOf(boundary BoundingBox) bool {
+func (star Star2D) InsideOf(boundary BoundingBox) bool {
 
 	// Test if the star is inside or outside of the bounding box.
 	// Abort testing if one of the conditions is not met
-	if s.C.X < boundary.Center.X+boundary.Width/2 {
-		if s.C.X > boundary.Center.X-boundary.Width/2 {
-			if s.C.Y < boundary.Center.Y+boundary.Width/2 {
-				if s.C.Y > boundary.Center.Y-boundary.Width/2 {
+	if star.C.X < boundary.Center.X+boundary.Width/2 {
+		if star.C.X > boundary.Center.X-boundary.Width/2 {
+			if star.C.Y < boundary.Center.Y+boundary.Width/2 {
+				if star.C.Y > boundary.Center.Y-boundary.Width/2 {
 					return true
 				}
 			}
@@ -48,33 +48,33 @@ func (s Star2D) InsideOf(boundary BoundingBox) bool {
 }
 
 // CalcNewPos calculates the new position of a star using the force acting on it
-func (s *Star2D) CalcNewPos(force Vec2, timestep float64) {
-	acceleration := NewVec2(force.X/s.M, force.Y/s.M)
-	s.Accelerate(acceleration, timestep)
+func (star *Star2D) CalcNewPos(force Vec2, timestep float64) {
+	acceleration := NewVec2(force.X/star.M, force.Y/star.M)
+	star.Accelerate(acceleration, timestep)
 }
 
 // Copy Return a copy of the star by returning a star struct with the same values.
-func (s *Star2D) Copy() Star2D {
-	return Star2D{s.C.Copy(), s.V.Copy(), s.M}
+func (star *Star2D) Copy() Star2D {
+	return Star2D{star.C.Copy(), star.V.Copy(), star.M}
 }
 
 // AccelerateVelocity accelerates the star with the acceleration a for the time t.
 // This changes the velocity of the star.
-func (s *Star2D) AccelerateVelocity(a Vec2, t float64) {
-	s.V = s.V.Add(a.Multiply(t))
+func (star *Star2D) AccelerateVelocity(a Vec2, t float64) {
+	star.V = star.V.Add(a.Multiply(t))
 }
 
 // Move the star with it's velocity for the time t.
 // This changes the Position of the star.
-func (s *Star2D) Move(t float64) {
-	s.C = s.C.Add(s.V.Multiply(t))
+func (star *Star2D) Move(t float64) {
+	star.C = star.C.Add(star.V.Multiply(t))
 }
 
 // Accelerate and move the star with it's velocity and the acceleration a for the time t
 // This changes the position and the velocity of the star.
-func (s *Star2D) Accelerate(a Vec2, t float64) {
-	s.AccelerateVelocity(a, t)
-	s.Move(t)
+func (star *Star2D) Accelerate(a Vec2, t float64) {
+	star.AccelerateVelocity(a, t)
+	star.Move(t)
 }
 
 // posX determines if the star is the positive x region of the given boundary. If it is,
