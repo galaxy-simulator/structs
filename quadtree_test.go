@@ -1149,7 +1149,7 @@ func TestNode_CalcCenterOfMass(t *testing.T) {
 		want   Vec2
 	}{
 		{
-			name: "Center of mass inbetween ",
+			name: "Center of mass in between ",
 			fields: fields{
 				Boundary: BoundingBox{
 					Center: Vec2{
