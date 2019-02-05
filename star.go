@@ -31,18 +31,18 @@ func (s Star2D) InsideOf(boundary BoundingBox) bool {
 	return false
 }
 
-// calcNewPos calculates the new position of a star using the force acting on it
+// CalcNewPos calculates the new position of a star using the force acting on it
 func (s *Star2D) CalcNewPos(force Vec2, timestep float64) {
 	acceleration := NewVec2(force.X/s.M, force.Y/s.M)
 	s.Accelerate(acceleration, timestep)
 }
 
-// Return a copy of the star by returning a star struct with the same values.
+// Copy Return a copy of the star by returning a star struct with the same values.
 func (s *Star2D) Copy() Star2D {
 	return Star2D{s.C.Copy(), s.V.Copy(), s.M}
 }
 
-// Accelerate the star with the acceleration a for the time t.
+// AccelerateVelocity accelerates the star with the acceleration a for the time t.
 // This changes the velocity of the star.
 func (s *Star2D) AccelerateVelocity(a Vec2, t float64) {
 	s.V = s.V.Add(a.Multiply(t))
@@ -71,9 +71,8 @@ func (star Star2D) posX(boundary BoundingBox) bool {
 
 	if star.C.X > bx && star.C.X < bx+bw {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 // posY determines if the star is the positive y region of the given boundary. If it is,
@@ -86,9 +85,8 @@ func (star Star2D) posY(boundary BoundingBox) bool {
 
 	if star.C.Y > by && star.C.Y < by+bw {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 // getRelativePosition returns the relative position of a star relative to the bounding
@@ -98,15 +96,13 @@ func (star Star2D) getRelativePosition(boundary BoundingBox) string {
 	if star.posX(boundary) == true {
 		if star.posY(boundary) == true {
 			return "NE"
-		} else {
-			return "SE"
 		}
+		return "SE"
 	} else {
 		if star.posY(boundary) == true {
 			return "NW"
-		} else {
-			return "SW"
 		}
+		return "SW"
 	}
 }
 
