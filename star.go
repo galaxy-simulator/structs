@@ -98,12 +98,11 @@ func (star Star2D) getRelativePosition(boundary BoundingBox) string {
 			return "NE"
 		}
 		return "SE"
-	} else {
-		if star.posY(boundary) == true {
-			return "NW"
-		}
-		return "SW"
 	}
+	if star.posY(boundary) == true {
+		return "NW"
+	}
+	return "SW"
 }
 
 func (star Star2D) getRelativePositionInt(boundary BoundingBox) int {
