@@ -1,4 +1,4 @@
-// main.go purpose is to build the interaction layer in between the http endpoints and the http server
+// quadtree.go defines nodes and trees storing galaxies
 // Copyright (C) 2019 Emile Hansmaennel
 //
 // This program is free software: you can redistribute it and/or modify
