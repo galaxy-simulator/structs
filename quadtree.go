@@ -11,7 +11,7 @@ import (
 )
 
 type Node struct {
-	Boundry      BoundingBox // Spatial outreach of the quadtree
+	Boundary     BoundingBox // Spatial outreach of the quadtree
 	CenterOfMass Vec2        // Center of mass of the cell
 	TotalMass    float64     // Total mass of all the stars in the cell
 	Depth        int         // Depth of the cell in the tree
@@ -26,7 +26,7 @@ type Node struct {
 // resulting in a node that should (in theory) fit the whole galaxy if defined correctly.
 func NewRoot(BoundingBoxWidth float64) *Node {
 	return &Node{
-		Boundry: BoundingBox{
+		Boundary: BoundingBox{
 			Center: Vec2{0, 0},
 			Width:  BoundingBoxWidth,
 		},
@@ -40,18 +40,18 @@ func NewRoot(BoundingBoxWidth float64) *Node {
 
 // Create a new new node using the given bounding box
 func NewNode(bounadry BoundingBox) *Node {
-	return &Node{Boundry: bounadry}
+	return &Node{Boundary: bounadry}
 }
 
 // Subdivide the tree
 func (n *Node) Subdivide() {
 
 	// define new values defining the new BoundaryBoxes
-	newBoundaryWidth := n.Boundry.Width / 2
-	newBoundaryPosX := n.Boundry.Center.X + (newBoundaryWidth / 2)
-	newBoundaryPosY := n.Boundry.Center.Y + (newBoundaryWidth / 2)
-	newBoundaryNegX := n.Boundry.Center.X - (newBoundaryWidth / 2)
-	newBoundaryNegY := n.Boundry.Center.Y - (newBoundaryWidth / 2)
+	newBoundaryWidth := n.Boundary.Width / 2
+	newBoundaryPosX := n.Boundary.Center.X + (newBoundaryWidth / 2)
+	newBoundaryPosY := n.Boundary.Center.Y + (newBoundaryWidth / 2)
+	newBoundaryNegX := n.Boundary.Center.X - (newBoundaryWidth / 2)
+	newBoundaryNegY := n.Boundary.Center.Y - (newBoundaryWidth / 2)
 
 	// define the new Subtrees
 	n.Subtrees[0] = NewNode(BoundingBox{Vec2{newBoundaryNegX, newBoundaryPosY}, newBoundaryWidth})
@@ -69,7 +69,7 @@ func (n *Node) Insert(star Star2D) error {
 	if n.Star == (Star2D{}) {
 		// if a subtree is present, insert the star into that subtree
 		if n.Subtrees != [4]*Node{} {
-			QuadrantBlocking := star.getRelativePositionInt(n.Boundry)
+			QuadrantBlocking := star.getRelativePositionInt(n.Boundary)
 			err := n.Subtrees[QuadrantBlocking].Insert(star)
 			if err != nil {
 				fmt.Println(err)
@@ -90,7 +90,7 @@ func (n *Node) Insert(star Star2D) error {
 		}
 
 		// Insert the blocking star into it's subtree
-		QuadrantBlocking := n.Star.getRelativePositionInt(n.Boundry)
+		QuadrantBlocking := n.Star.getRelativePositionInt(n.Boundary)
 		err := n.Subtrees[QuadrantBlocking].Insert(n.Star)
 		if err != nil {
 			fmt.Println(err)
@@ -98,7 +98,7 @@ func (n *Node) Insert(star Star2D) error {
 		n.Star = Star2D{}
 
 		// Insert the blocking star into it's subtree
-		QuadrantBlockingNew := star.getRelativePositionInt(n.Boundry)
+		QuadrantBlockingNew := star.getRelativePositionInt(n.Boundary)
 		err = n.Subtrees[QuadrantBlockingNew].Insert(star)
 		if err != nil {
 			fmt.Println(err)
@@ -278,7 +278,7 @@ func (n Node) CalcAllForces(star Star2D, theta float64) Vec2 {
 	var tmpY float64 = math.Pow(star.C.Y-n.Star.C.Y, 2)
 	var distance float64 = math.Sqrt(tmpX + tmpY)
 
-	var localtheta float64 = n.Boundry.Width / distance
+	var localtheta float64 = n.Boundary.Width / distance
 
 	// if the subtree is not empty...
 	if n.Subtrees != ([4]*Node{}) {

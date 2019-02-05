@@ -29,7 +29,7 @@ func TestNewRoot(t *testing.T) {
 				BoundingBoxWidth: 100,
 			},
 			want: &Node{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 0,
 						Y: 0,
@@ -100,7 +100,7 @@ func TestNewNode(t *testing.T) {
 				},
 			},
 			want: &Node{
-				Boundry: BoundingBox{
+				Boundary: BoundingBox{
 					Center: Vec2{
 						X: 3,
 						Y: 15,
@@ -196,7 +196,7 @@ func TestNode_Subdivide(t *testing.T) {
 				},
 				Subtrees: [4]*Node{
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: -25,
 								Y: 25,
@@ -223,7 +223,7 @@ func TestNode_Subdivide(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: 25,
 								Y: 25,
@@ -250,7 +250,7 @@ func TestNode_Subdivide(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: -25,
 								Y: -25,
@@ -277,7 +277,7 @@ func TestNode_Subdivide(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: 25,
 								Y: -25,
@@ -310,7 +310,7 @@ func TestNode_Subdivide(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &Node{
-				Boundry:      tt.fields.Boundry,
+				Boundary:     tt.fields.Boundry,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -609,7 +609,7 @@ func TestNode_Insert(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &Node{
-				Boundry:      tt.fields.Boundry,
+				Boundary:     tt.fields.Boundry,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -725,7 +725,7 @@ func TestNode_GenForestTree(t *testing.T) {
 			},
 			args: args{
 				node: &Node{
-					Boundry: BoundingBox{
+					Boundary: BoundingBox{
 						Center: Vec2{
 							X: 0,
 							Y: 0,
@@ -758,7 +758,7 @@ func TestNode_GenForestTree(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := Node{
-				Boundry:      tt.fields.Boundry,
+				Boundary:     tt.fields.Boundry,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -837,7 +837,7 @@ func TestNode_DrawTreeLaTeX(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := Node{
-				Boundry:      tt.fields.Boundry,
+				Boundary:     tt.fields.Boundry,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -938,7 +938,7 @@ func TestNode_GetAllStars(t *testing.T) {
 				},
 				Subtrees: [4]*Node{
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: -25,
 								Y: 25,
@@ -965,7 +965,7 @@ func TestNode_GetAllStars(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: 25,
 								Y: 25,
@@ -992,7 +992,7 @@ func TestNode_GetAllStars(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: -25,
 								Y: -25,
@@ -1019,7 +1019,7 @@ func TestNode_GetAllStars(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: 25,
 								Y: -25,
@@ -1098,7 +1098,7 @@ func TestNode_GetAllStars(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := Node{
-				Boundry:      tt.fields.Boundry,
+				Boundary:     tt.fields.Boundry,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -1177,7 +1177,7 @@ func TestNode_CalcCenterOfMass(t *testing.T) {
 				},
 				Subtrees: [4]*Node{
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: -25,
 								Y: 25,
@@ -1204,7 +1204,7 @@ func TestNode_CalcCenterOfMass(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: 25,
 								Y: 25,
@@ -1231,7 +1231,7 @@ func TestNode_CalcCenterOfMass(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: -25,
 								Y: -25,
@@ -1258,7 +1258,7 @@ func TestNode_CalcCenterOfMass(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: 25,
 								Y: -25,
@@ -1295,7 +1295,7 @@ func TestNode_CalcCenterOfMass(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &Node{
-				Boundry:      tt.fields.Boundry,
+				Boundary:     tt.fields.Boundry,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -1357,7 +1357,7 @@ func TestNode_CalcTotalMass(t *testing.T) {
 				},
 				Subtrees: [4]*Node{
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: -25,
 								Y: 25,
@@ -1384,7 +1384,7 @@ func TestNode_CalcTotalMass(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: 25,
 								Y: 25,
@@ -1411,7 +1411,7 @@ func TestNode_CalcTotalMass(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: -25,
 								Y: -25,
@@ -1438,7 +1438,7 @@ func TestNode_CalcTotalMass(t *testing.T) {
 						Subtrees: [4]*Node{},
 					},
 					{
-						Boundry: BoundingBox{
+						Boundary: BoundingBox{
 							Center: Vec2{
 								X: 25,
 								Y: -25,
@@ -1472,7 +1472,7 @@ func TestNode_CalcTotalMass(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := &Node{
-				Boundry:      tt.fields.Boundry,
+				Boundary:     tt.fields.Boundry,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
@@ -1562,7 +1562,7 @@ func TestNode_CalcAllForces(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			n := Node{
-				Boundry:      tt.fields.Boundry,
+				Boundary:     tt.fields.Boundry,
 				CenterOfMass: tt.fields.CenterOfMass,
 				TotalMass:    tt.fields.TotalMass,
 				Depth:        tt.fields.Depth,
